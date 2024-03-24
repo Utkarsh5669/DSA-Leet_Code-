@@ -1,10 +1,16 @@
 class Solution {
     public int findDuplicate(int[] nums) {
-        Set<Integer> set = new HashSet();
-        for(int i=0;i<nums.length;i++) {
-            if(set.contains(nums[i])) return nums[i];
-            set.add(nums[i]);
+           int tortoise = nums[0];
+        int hare = nums[0];
+        do {
+            tortoise = nums[tortoise];
+            hare = nums[nums[hare]];
+        } while (tortoise != hare);
+        tortoise = nums[0];
+        while (tortoise != hare) {
+            tortoise = nums[tortoise];
+            hare = nums[hare];
         }
-        return -1;
-    }
+        return tortoise;
+        }
 }
