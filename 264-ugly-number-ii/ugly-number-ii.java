@@ -1,28 +1,21 @@
 class Solution {
     public int nthUglyNumber(int n) {
-        int[] primes = {2, 3, 5};  // Initialize the primes array
-        int[] indices = {0, 0, 0}; // Initialize indices for multiples of 2, 3, 5
-        List<Integer> uglyArr = new ArrayList<>();  // Initialize the ugly number array with 1
-        uglyArr.add(1);
+        int[] num = new int[1690];
+        num[0] = 1;
+        int ugly = 0, i2 = 0, i3 = 0, i5 = 0;
 
-        for (int i = 1; i < n; ++i) {
-            // Calculate the next possible ugly numbers
-            int[] nextUglies = {
-                uglyArr.get(indices[0]) * primes[0],
-                uglyArr.get(indices[1]) * primes[1],
-                uglyArr.get(indices[2]) * primes[2]
-            };
-            int minValue = Math.min(nextUglies[0], Math.min(nextUglies[1], nextUglies[2]));  // Find the smallest value
-            uglyArr.add(minValue);  // Append the smallest value to uglyArr
+        for (int i = 1; i < 1690; i++) {
+            num[i] = Math.min(Math.min(2 * num[i2], 3 * num[i3]), 5 * num[i5]);
+            ugly = num[i];
 
-            // Update indices for primes that generated the current min_value
-            for (int j = 0; j < 3; ++j) {
-                if (nextUglies[j] == minValue) {
-                    indices[j]++;
-                }
-            }
+            if (num[i2] * 2 == ugly)
+                i2++;
+            if (num[i3] * 3 == ugly)
+                i3++;
+            if (num[i5] * 5 == ugly)
+                i5++;
         }
 
-        return uglyArr.get(n - 1);
+        return num[n - 1];
     }
 }
