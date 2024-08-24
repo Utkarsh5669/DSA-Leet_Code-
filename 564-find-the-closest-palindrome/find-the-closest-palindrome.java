@@ -39,5 +39,3 @@ class Solution {
         return palindrome;
     }
 }
-
-//https://leetcode.com/problems/find-the-closest-palindrome/submissions/1364740180/
