@@ -1,33 +1,36 @@
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-class Solution {
+public class Solution {
     public int robotSim(int[] commands, int[][] obstacles) {
-        int x=0,y=0,d=0;
-        int[][] direction={{0,1},{1,0},{0,-1},{-1,0}};
-        int maxDistance=0;
-        Set<String> obstacleSet=new HashSet<>();
-        for(int[] obstacle:obstacles){
-            obstacleSet.add(obstacle[0]+","+obstacle[1]);
+        Set<List<Integer>> obsSet = new HashSet<>();
+        for (int[] obs : obstacles) {
+            obsSet.add(List.of(obs[0], obs[1]));
         }
-        for(int cmd:commands){
-            if(cmd==-1){
-                d=(d+1)%4;
-            }else if(cmd==-2){
-                d=(d+3)%4;
-            }else{
-                for(int i=0;i<cmd;i++){
-                    int nx=x+direction[d][0];
-                    int ny=y+direction[d][1];
-                    if(obstacleSet.contains(nx+","+ny)){
+        int[] directions = {0, 1, 2, 3}; // 0: north, 1: east, 2: south, 3: west
+        int x = 0, y = 0, dir = 0;
+        int maxDist = 0;
+
+        for (int cmd : commands) {
+            if (cmd == -1) {
+                dir = (dir + 1) % 4;
+            } else if (cmd == -2) {
+                dir = (dir + 3) % 4;
+            } else {
+                for (int i = 0; i < cmd; i++) {
+                    int newX = x + (dir == 1 ? 1 : dir == 3 ? -1 : 0);
+                    int newY = y + (dir == 0 ? 1 : dir == 2 ? -1 : 0);
+                    if (!obsSet.contains(List.of(newX, newY))) {
+                        x = newX;
+                        y = newY;
+                    } else {
                         break;
                     }
-                    x=nx;
-                    y=ny;
-                    maxDistance=Math.max(maxDistance,x*x+y*y);
                 }
             }
+            maxDist = Math.max(maxDist, x * x + y * y);
         }
-        return maxDistance;
+        return maxDist;
     }
 }
