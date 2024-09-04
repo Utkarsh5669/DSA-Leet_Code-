@@ -1,86 +1,36 @@
-class Solution {
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class Solution {
     public int robotSim(int[] commands, int[][] obstacles) {
-        int n = commands.length;
-        int x=0,y=0,i=0,d=0,max=0;
-        HashSet<List<Integer>> set = new HashSet<>();
-        for(int k=0;k<obstacles.length;k++){
-            List<Integer> list = new ArrayList<>();
-            list.add(obstacles[k][0]);
-            list.add(obstacles[k][1]);
-            set.add(list);
+        Set<List<Integer>> obsSet = new HashSet<>();
+        for (int[] obs : obstacles) {
+            obsSet.add(List.of(obs[0], obs[1]));
         }
-        for(;i<n;i++){
-            if(commands[i]==-2){
-                d--;
-                if(d==-1){
-                    d=3;
-                }
-            }
-            else if (commands[i]==-1){
-                d++;
-                if(d==4){
-                    d=0;
-                }
-            }
-            else{
-                int sum = commands[i];
-                if(d==0){
-                    while(sum!=0){
-                        y++;
-                        List<Integer> list = new ArrayList<>();
-                        list.add(x);
-                        list.add(y);
-                        if(set.contains(list)){
-                            y--;
-                            break;
-                        }
-                        sum--;
-                    }
-                }
-                else if(d==1){
-                    while(sum!=0){
-                        x++;
-                        List<Integer> list = new ArrayList<>();
-                        list.add(x);
-                        list.add(y);
-                        if(set.contains(list)){
-                            x--;
-                            break;
-                        }
-                        sum--;
-                    }
-                }
-                else if(d==2){
-                    while(sum!=0){
-                        y--;
-                        List<Integer> list = new ArrayList<>();
-                        list.add(x);
-                        list.add(y);
-                        if(set.contains(list)){
-                            y++;
-                            break;
-                        }
-                        sum--;
-                    }
-                }
-                else{
-                    while(sum!=0){
-                        x--;
-                        List<Integer> list = new ArrayList<>();
-                        list.add(x);
-                        list.add(y);
-                        if(set.contains(list)){
-                            x++;
-                            break;
-                        }
-                        sum--;
+        int[] directions = {0, 1, 2, 3}; // 0: north, 1: east, 2: south, 3: west
+        int x = 0, y = 0, dir = 0;
+        int maxDist = 0;
+
+        for (int cmd : commands) {
+            if (cmd == -1) {
+                dir = (dir + 1) % 4;
+            } else if (cmd == -2) {
+                dir = (dir + 3) % 4;
+            } else {
+                for (int i = 0; i < cmd; i++) {
+                    int newX = x + (dir == 1 ? 1 : dir == 3 ? -1 : 0);
+                    int newY = y + (dir == 0 ? 1 : dir == 2 ? -1 : 0);
+                    if (!obsSet.contains(List.of(newX, newY))) {
+                        x = newX;
+                        y = newY;
+                    } else {
+                        break;
                     }
                 }
             }
-            if(max<((x*x)+(y*y))){
-                max = (x*x)+(y*y);
-            }
+            maxDist = Math.max(maxDist, x * x + y * y);
         }
-        return max;
+        return maxDist;
     }
 }
