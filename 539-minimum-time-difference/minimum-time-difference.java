@@ -1,23 +1,27 @@
 class Solution {
+    public int findMinDifference(List<String> tp) {
+        int mini = Integer.MAX_VALUE;
+        List<Integer> minutes = new ArrayList<>();
 
-    public int findMinDifference(List<String> timePoints) {
-
-        int[] minutes = new int[timePoints.size()];
-        for (int i = 0; i < timePoints.size(); i++) {
-            String time = timePoints.get(i);
-            int h = Integer.parseInt(time.substring(0, 2));
-            int m = Integer.parseInt(time.substring(3));
-            minutes[i] = h * 60 + m;
+        // Convert each time point to minutes
+        for (String val : tp) {
+            int hr = 10 * (val.charAt(0) - '0') + (val.charAt(1) - '0'); // Extract hours
+            int min = 10 * (val.charAt(3) - '0') + (val.charAt(4) - '0'); // Extract minutes
+            minutes.add(hr * 60 + min); // Convert to total minutes
         }
-        Arrays.sort(minutes);
 
-        int ans = Integer.MAX_VALUE;
-        for (int i = 0; i < minutes.length - 1; i++) {
-            ans = Math.min(ans, minutes[i + 1] - minutes[i]);
+        // Sort the minutes
+        Collections.sort(minutes);
+
+        // Calculate the minimum difference between adjacent times
+        for (int i = 1; i < minutes.size(); i++) {
+            mini = Math.min(mini, minutes.get(i) - minutes.get(i - 1));
         }
-        return Math.min(
-            ans,
-            24 * 60 - minutes[minutes.length - 1] + minutes[0]
-        );
+
+        // Also, check the difference between the first and last time, considering the 24-hour wraparound
+        int n = minutes.size();
+        mini = Math.min(mini, 1440 - (minutes.get(n - 1) - minutes.get(0)));
+
+        return mini;
     }
 }
