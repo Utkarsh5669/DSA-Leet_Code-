@@ -1,19 +1,26 @@
-class Solution {
+public class Solution {
+
     public List<Integer> lexicalOrder(int n) {
-        List<Integer> al = new ArrayList<>();
-        int curr=1;
-        for(int i=1;i<=n;i++){
-            al.add(curr);
-            if(curr*10<=n)
-            curr = curr*10;
-            else
-            {
-                while(curr%10==9 || curr>=n){
-                    curr = curr /10;
-                }
-                curr+=1;
+        List<Integer> lexicographicalNumbers = new ArrayList<>();
+        for (int start = 1; start <= 9; ++start) {
+            generateLexicalNumbers(start, n, lexicographicalNumbers);
+        }
+        return lexicographicalNumbers;
+    }
+    private void generateLexicalNumbers(
+        int currentNumber,
+        int limit,
+        List<Integer> result
+    ) {
+        if (currentNumber > limit) return;
+        result.add(currentNumber);
+        for (int nextDigit = 0; nextDigit <= 9; ++nextDigit) {
+            int nextNumber = currentNumber * 10 + nextDigit;
+            if (nextNumber <= limit) {
+                generateLexicalNumbers(nextNumber, limit, result);
+            } else {
+                break; 
             }
         }
-        return al;
     }
 }
