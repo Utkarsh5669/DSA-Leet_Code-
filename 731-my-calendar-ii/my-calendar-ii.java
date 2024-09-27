@@ -8,7 +8,6 @@ class Event
     this.end = end;
   }  
 }
-
 class MyCalendarTwo {
     List<Event> overLapBookings;
     List<Event> bookings;
@@ -17,15 +16,12 @@ class MyCalendarTwo {
         overLapBookings = new ArrayList<>();
         bookings = new ArrayList<>();
     }
-    
-    public boolean book(int start, int end) {
-        
+    public boolean book(int start, int end) {   
     for(Event e : overLapBookings)
     {
       if(isOverlap(e, start, end))
       return false;  
     } 
-
     for(Event e : bookings)
     {
       if(isOverlap(e, start, end))
@@ -34,7 +30,6 @@ class MyCalendarTwo {
       }    
     }  
        bookings.add(new Event(start, end));
-
        return true; 
     }
 
@@ -42,7 +37,6 @@ class MyCalendarTwo {
     {
       return Math.max(e.start, start)<Math.min(e.end, end); 
     }
-
     public Event getOverlapEvent(Event e, int start, int end)
     {
       return new Event(Math.max(e.start, start), Math.min(e.end, end));  
