@@ -1,69 +1,120 @@
-class Node {
-    int cnt;
-    Set<String> keys;
-    Node prev, next; 
-    public Node(int c) {
-        cnt = c;
-        keys = new HashSet<>();
-        prev = next = null;
+public class Node {
+
+    int freq;
+    Node prev;
+    Node next;
+    Set<String> strSet = new HashSet<>();
+
+    Node(int freq) {
+        this.freq = freq;
     }
 }
+
 class AllOne {
-    private Map<String, Integer> keyCnt; 
-    private Map<Integer, Node> cntNodeMap; 
-    private Node head, tail;
-    public AllOne() {
-        keyCnt = new HashMap<>();
-        cntNodeMap = new HashMap<>();
-        head = new Node(Integer.MIN_VALUE);
-        tail = new Node(Integer.MAX_VALUE);
+
+    Node head;
+    Node tail;
+    Map<String, Node> strToNodeMap = new HashMap<>();
+
+    AllOne() {
+        head = new Node(0);
+        tail = new Node(0);
         head.next = tail;
         tail.prev = head;
     }
-    private Node addNodeAfter(Node node, int c) {
-        Node newNode = new Node(c);
-        newNode.next = node.next;
-        newNode.prev = node;
-        node.next.prev = newNode;
-        node.next = newNode;
-        cntNodeMap.put(c, newNode);
-        return newNode;
-    }
-    private void removeNode(Node node) {
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
-        cntNodeMap.remove(node.cnt);
-    }
+
     public void inc(String key) {
-        int c = keyCnt.getOrDefault(key, 0);
-        keyCnt.put(key, c + 1);
-        Node curr = cntNodeMap.get(c);
-        Node next = cntNodeMap.get(c + 1);
-        if (next == null) next = addNodeAfter(curr == null ? head : curr, c + 1);
-        next.keys.add(key);
-        if (curr != null) {
-            curr.keys.remove(key);
-            if (curr.keys.isEmpty()) removeNode(curr);
+        if (strToNodeMap.containsKey(key)) {
+            Node node = strToNodeMap.get(key);
+            int freq = node.freq;
+            node.strSet.remove(key);
+
+            Node nextNode = node.next;
+            if (nextNode == tail || nextNode.freq != freq + 1) {
+                Node newNode = new Node(freq + 1);
+                newNode.strSet.add(key);
+                newNode.prev = node;
+                newNode.next = nextNode;
+                node.next = newNode;
+                nextNode.prev = newNode;
+                strToNodeMap.put(key, newNode);
+            } else {
+                nextNode.strSet.add(key);
+                strToNodeMap.put(key, nextNode);
+            }
+
+            if (node.strSet.isEmpty()) {
+            deleteNode(node);
+            }
+        }
+         else {
+            Node firstNode = head.next;
+            if (firstNode == tail || firstNode.freq > 1) {
+                Node newNode = new Node(1);
+                newNode.strSet.add(key);
+                newNode.prev = head;
+                newNode.next = firstNode;
+                head.next = newNode;
+                firstNode.prev = newNode;
+                strToNodeMap.put(key, newNode);
+            } else {
+                firstNode.strSet.add(key);
+                strToNodeMap.put(key, firstNode);
+            }
         }
     }
+
     public void dec(String key) {
-        int c = keyCnt.get(key);
-        if (c == 1) keyCnt.remove(key);
-        else keyCnt.put(key, c - 1);
+        if (!strToNodeMap.containsKey(key)) {
+            return;
+        }
 
-        Node curr = cntNodeMap.get(c);
-        Node prev = cntNodeMap.get(c - 1);
+        Node node = strToNodeMap.get(key);
+        node.strSet.remove(key);
+        int freq = node.freq;
 
-        if (c > 1 && prev == null) prev = addNodeAfter(curr.prev, c - 1);
-        if (c > 1) prev.keys.add(key);
+        if (freq == 1) {
+            strToNodeMap.remove(key);
+        } else {
+            Node prevNode = node.prev;
+            if (prevNode == head || prevNode.freq != freq - 1) {
+                Node newNode = new Node(freq - 1);
+                newNode.strSet.add(key);
+                newNode.prev = prevNode;
+                newNode.next = node;
+                prevNode.next = newNode;
+                node.prev = newNode;
+                strToNodeMap.put(key, newNode);
+            } else {
+                prevNode.strSet.add(key);
+                strToNodeMap.put(key, prevNode);
+            }
+        }
 
-        curr.keys.remove(key);
-        if (curr.keys.isEmpty()) removeNode(curr);
+        if (node.strSet.isEmpty()) {
+            deleteNode(node);
+        }
     }
+
     public String getMaxKey() {
-        return tail.prev == head ? "" : tail.prev.keys.iterator().next();
+        if (tail.prev == head) {
+            return "";
+        }
+        return tail.prev.strSet.iterator().next();
     }
+
     public String getMinKey() {
-        return head.next == tail ? "" : head.next.keys.iterator().next();
+        if (head.next == tail) {
+            return "";
+        }
+        return head.next.strSet.iterator().next();
+    }
+
+    private void deleteNode(Node node) {
+        Node prevNode = node.prev;
+        Node afterNode = node.next;
+
+        prevNode.next = afterNode;
+        afterNode.prev = prevNode;
     }
 }
