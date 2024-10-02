@@ -1,16 +1,18 @@
-import java.util.*;
-
 class Solution {
     public int[] arrayRankTransform(int[] arr) {
-        Map<Integer, Integer> valueToRank = new HashMap<>(); 
-        int[] sortedUniqueNumbers = Arrays.stream(arr).distinct().sorted().toArray();  // Remove duplicates and sort
-        
-        for (int i = 0; i < sortedUniqueNumbers.length; i++) {
-            valueToRank.put(sortedUniqueNumbers[i], i + 1);
+        int n = arr.length,i=0;
+        TreeMap<Integer,Integer> map = new TreeMap<>();
+        for(i=0;i<n;i++){
+            map.put(arr[i],1);
         }
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = valueToRank.get(arr[i]);
+        i=1;
+        for(Map.Entry<Integer,Integer> entry:map.entrySet()){
+            map.put(entry.getKey(),i);
+            i++;
         }
-        return arr;  
+        for(i=0;i<n;i++){
+            arr[i] = map.get(arr[i]);
+        }
+        return arr;
     }
 }
