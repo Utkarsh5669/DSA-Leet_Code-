@@ -1,13 +1,15 @@
 class Solution {
     public long minimumSteps(String s) {
-        long swap = 0;
-        int black = 0; 
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '0') 
-                swap += (long) black; 
-            else
-                black++; 
+        long ans = 0;
+        long zeroCnt = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            char ch = s.charAt(i); 
+            if (ch == '0') {
+                zeroCnt++;
+            } else if (ch == '1') {
+                ans += zeroCnt;
+            }
         }
-        return swap;
+        return ans;
     }
 }
