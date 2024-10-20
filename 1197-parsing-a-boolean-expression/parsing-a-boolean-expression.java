@@ -1,40 +1,44 @@
-public class Solution {
-
+class Solution {
     public boolean parseBoolExpr(String expression) {
-        Stack<Character> st = new Stack<>();
+        Stack<Character> stk = new Stack<>();  // Stack to hold characters and operators
 
-        for (char currChar : expression.toCharArray()) {
-            if (currChar == ',' || currChar == '(') continue; 
-            if (
-                currChar == 't' ||
-                currChar == 'f' ||
-                currChar == '!' ||
-                currChar == '&' ||
-                currChar == '|'
-            ) {
-                st.push(currChar);
-            }
-            else if (currChar == ')') {
-                boolean hasTrue = false, hasFalse = false;
-
-                while (
-                    st.peek() != '!' && st.peek() != '&' && st.peek() != '|'
-                ) {
-                    char topValue = st.pop();
-                    if (topValue == 't') hasTrue = true;
-                    if (topValue == 'f') hasFalse = true;
+        // Iterate over each character in the expression
+        for (char c : expression.toCharArray()) {
+            // Push valid characters (non ')' and non ',') to the stack
+            if (c != ')' && c != ',') stk.push(c);
+            else if (c == ')') {  // When ')' is encountered, evaluate subexpression
+                ArrayList<Boolean> exp = new ArrayList<>();  // List to hold boolean values
+                
+                // Pop characters until '(' is found, collect 't' or 'f' values
+                while (!stk.isEmpty() && stk.peek() != '(') {
+                    char t = stk.pop();
+                    if (t == 't') exp.add(true);
+                    else exp.add(false);
                 }
-
-                char op = st.pop();
-                if (op == '!') {
-                    st.push(hasTrue ? 'f' : 't');
-                } else if (op == '&') {
-                    st.push(hasFalse ? 'f' : 't');
-                } else {
-                    st.push(hasTrue ? 't' : 'f');
+                
+                stk.pop();  // Pop the '(' from the stack
+                
+                if (!stk.isEmpty()) {
+                    char t = stk.pop();  // Get the operator before '('
+                    boolean v = exp.get(0);  // Initialize result with the first value
+                    
+                    // Perform the corresponding logical operation
+                    if (t == '&') {  // AND operation
+                        for (boolean b : exp) v &= b;
+                    } else if (t == '|') {  // OR operation
+                        for (boolean b : exp) v |= b;
+                    } else {  // NOT operation
+                        v = !v;
+                    }
+                    
+                    // Push the result back to the stack as 't' or 'f'
+                    if (v) stk.push('t');
+                    else stk.push('f');
                 }
             }
         }
-        return st.peek() == 't';
+
+        // Return the final result from the stack
+        return stk.peek() == 't';
     }
 }
