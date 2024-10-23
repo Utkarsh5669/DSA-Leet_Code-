@@ -1,38 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 class Solution {
     public TreeNode replaceValueInTree(TreeNode root) {
-        dfs(new TreeNode[] {root});
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
         root.val = 0;
+        
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            int levelSum = 0;
+            List<TreeNode> currentLevel = new ArrayList<>();
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode node = queue.poll();
+                currentLevel.add(node);
+                if (node.left != null) levelSum += node.left.val;
+                if (node.right != null) levelSum += node.right.val;
+            }
+            for (TreeNode node : currentLevel) {
+                int siblingSum = 0;
+                if (node.left != null) siblingSum += node.left.val;
+                if (node.right != null) siblingSum += node.right.val;
+
+                if (node.left != null) {
+                    node.left.val = levelSum - siblingSum;
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    node.right.val = levelSum - siblingSum;
+                    queue.add(node.right);
+                }
+            }
+        }
+        
         return root;
-    }
-
-    private void dfs(TreeNode[] arr) {
-        if (arr.length == 0) return;
-
-        int sum = 0;
-        for (TreeNode node : arr) {
-            if (node == null) continue;
-            if (node.left != null) sum += node.left.val;
-            if (node.right != null) sum += node.right.val;
-        }
-
-        TreeNode[] childArr = new TreeNode[arr.length * 2];
-        int index = 0;
-
-        for (TreeNode node : arr) {
-            int curSum = 0;
-            if (node.left != null) curSum += node.left.val;
-            if (node.right != null) curSum += node.right.val;
-
-            if (node.left != null) {
-                node.left.val = sum - curSum;
-                childArr[index++] = node.left;
-            }
-            if (node.right != null) {
-                node.right.val = sum - curSum;
-                childArr[index++] = node.right;
-            }
-        }
-
-        dfs(java.util.Arrays.copyOf(childArr, index));
     }
 }
