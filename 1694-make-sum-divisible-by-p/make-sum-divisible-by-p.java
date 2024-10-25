@@ -1,34 +1,41 @@
-public class Solution {
+class Solution {
     public int minSubarray(int[] nums, int p) {
-        long totalSum = 0;
-        for (int num : nums) {
-            totalSum += num;
-        }
-
-        int remainder = (int)(totalSum % p);
-        if (remainder == 0) return 0;
-
-        HashMap<Integer, Integer> prefixSums = new HashMap<>();
-        prefixSums.put(0, -1);
-
         int n = nums.length;
-        int prefixSum = 0;
-        int minLength = n;
 
-        for (int i = 0; i < n; i++) {
-            prefixSum = (prefixSum + nums[i]) % p;
-            if (prefixSum < 0) {
-                prefixSum += p;  // Adjust for negative remainders
-            }
-
-            int target = (prefixSum - remainder + p) % p;
-            if (prefixSums.containsKey(target)) {
-                minLength = Math.min(minLength, i - prefixSums.get(target));
-            }
-
-            prefixSums.put(prefixSum, i);
+        long sum = 0;
+        for (int num : nums) {
+            sum += num;
         }
 
-        return minLength == n ? -1 : minLength;
+        // Edge case
+        if (sum % p == 0) {
+            return 0;
+        }
+        if (sum < p) {
+            return -1;
+        }
+
+        Map<Long, Integer> map = new HashMap<>();
+        map.put(0l, -1);
+
+        long rem = sum % p;
+        sum = 0;
+        int res = n;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            sum %= p;
+
+            long rem_ = sum - rem;
+            if (rem_ < 0) {
+                rem_ += p;
+            }
+
+            Integer val = map.get(rem_);
+            if (val != null) {
+                res = Math.min(res, i - val);
+            }
+            map.put(sum, i);
+        }
+        return res == n ? -1 : res;
     }
 }
