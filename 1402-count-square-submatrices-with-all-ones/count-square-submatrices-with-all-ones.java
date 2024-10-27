@@ -1,37 +1,36 @@
 class Solution {
-    public int countSquares(int[][] matrix) {
-        // Get dimensions of the matrix
-        int n = matrix.length;    // number of rows
-        int m = matrix[0].length; // number of columns
-        
-        // Create a DP table with same dimensions as matrix
-        int[][] dp = new int[n][m];
-        
-        // Variable to store total count of squares
-        int ans = 0;
-        
-        // Initialize first column of DP table
+
+    private int solveSum(int[][] dp, int n, int m) {
+        int sum = 0;
         for (int i = 0; i < n; i++) {
-            dp[i][0] = matrix[i][0];
-            ans += dp[i][0];
-        }
-        
-        // Initialize first row of DP table
-        for (int j = 1; j < m; j++) {
-            dp[0][j] = matrix[0][j];
-            ans += dp[0][j];
-        }
-        
-        // Fill the DP table for remaining cells
-        for(int i = 1; i < n; i++) {
-            for(int j = 1; j < m; j++) {
-                if(matrix[i][j] == 1) {
-                    dp[i][j] = 1 + Math.min(Math.min(dp[i][j-1], dp[i-1][j]), dp[i-1][j-1]);
-                }
-                ans += dp[i][j];
+            for (int j = 0; j < m; j++) {
+                sum += dp[i][j];
             }
         }
-        
-        return ans;
+        return sum;
+    }
+
+    public int countSquares(int[][] matrix) {
+        int n = matrix.length, m = matrix[0].length;
+
+        int[][] dp = new int[n][m];
+        for (int j = 0; j < m; j++) {
+            dp[0][j] = matrix[0][j];
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = matrix[i][0];
+        }
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < m; j++) {
+                if (matrix[i][j] == 0) {
+                    dp[i][j] = 0;
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j],
+                            Math.min(dp[i - 1][j - 1], dp[i][j - 1]));
+                }
+            }
+        }
+        return solveSum(dp, n, m);
     }
 }
