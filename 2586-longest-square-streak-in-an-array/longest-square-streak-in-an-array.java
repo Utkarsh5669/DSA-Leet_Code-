@@ -1,21 +1,25 @@
+import java.util.HashSet;
+import java.util.Set;
+
 class Solution {
     public int longestSquareStreak(int[] nums) {
         Set<Long> set = new HashSet<>();
-        for (int num : nums)
-            set.add((long) num);
-
-        Arrays.sort(nums);
-        int res = -1;
-
         for (int num : nums) {
-            long temp = (long) num;
-            int cnt = 1;
-            while (set.contains(temp * temp)) {
-                cnt++;
-                temp = temp * temp;
-                res = Math.max(res, cnt);
-            }
+            set.add((long) num);
         }
-        return res;
+
+        int maxStreak = 0;
+        for (int num : nums) {
+            int count = 0;
+            long current = num;
+            while (set.contains(current)) {
+                count++;
+                current = current * current;
+                if (current > Integer.MAX_VALUE) break; // Avoid overflow
+            }
+            maxStreak = Math.max(maxStreak, count);
+        }
+
+        return maxStreak >= 2 ? maxStreak : -1;
     }
 }
