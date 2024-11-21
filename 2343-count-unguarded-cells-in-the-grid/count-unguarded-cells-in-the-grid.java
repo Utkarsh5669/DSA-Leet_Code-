@@ -1,44 +1,50 @@
 class Solution {
     public int countUnguarded(int m, int n, int[][] guards, int[][] walls) {
-        // Initialize grid with zeros
-        int[][] g = new int[m][n];
-        
-        // Mark guards and walls as 2
-        for (int[] e : guards) {
-            g[e[0]][e[1]] = 2;
+        int[][] grid = new int[m][n];
+        int x, y;
+        for (int[] guard : guards) {
+            grid[guard[0]][guard[1]] = 1;
         }
-        for (int[] e : walls) {
-            g[e[0]][e[1]] = 2;
+        for (int[] wall : walls) {
+            grid[wall[0]][wall[1]] = 1;
         }
-        
-        // Directions: up, right, down, left
-        int[] dirs = {-1, 0, 1, 0, -1};
-        
-        // Process each guard's line of sight
-        for (int[] e : guards) {
-            for (int k = 0; k < 4; ++k) {
-                int x = e[0], y = e[1];
-                int dx = dirs[k], dy = dirs[k + 1];
-                
-                // Check cells in current direction until hitting boundary or obstacle
-                while (x + dx >= 0 && x + dx < m && y + dy >= 0 && y + dy < n && g[x + dx][y + dy] < 2) {
-                    x += dx;
-                    y += dy;
-                    g[x][y] = 1;
+        int count = 0;
+        for (int[] guard : guards) {
+            x = guard[0] - 1;
+            y = guard[1];
+            while (x >= 0 && grid[x][y] != 1) {
+                if (grid[x][y] != -1) {
+                    count++;
+                    grid[x][y] = -1;
                 }
+                x--;
+            }
+            x = guard[0] + 1;
+            while (x < m && grid[x][y] != 1) {
+                if (grid[x][y] != -1) {
+                    count++;
+                    grid[x][y] = -1;
+                }
+                x++;
+            }
+            x = guard[0];
+            y = guard[1] - 1;
+            while (y >= 0 && grid[x][y] != 1) {
+                if (grid[x][y] != -1) {
+                    count++;
+                    grid[x][y] = -1;
+                }
+                y--;
+            }
+            y = guard[1] + 1;
+            while (y < n && grid[x][y] != 1) {
+                if (grid[x][y] != -1) {
+                    count++;
+                    grid[x][y] = -1;
+                }
+                y++;
             }
         }
-        
-        // Count unguarded cells (cells with value 0)
-        int unguardedCount = 0;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (g[i][j] == 0) {
-                    unguardedCount++;
-                }
-            }
-        }
-        
-        return unguardedCount;
+        return m * n - guards.length - walls.length - count;
     }
 }
